@@ -1,6 +1,5 @@
 #! /usr/bin/env sh
 
-# TODO: read props from command line
 timeout="10m"
 subfolder="assets"
 
@@ -18,6 +17,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -i)
       invert=1
+      shift # past argument
+      ;;
+    -n)
+      invert=
       shift # past argument
       ;;
     *|-*|--*)
@@ -44,8 +47,9 @@ osascript "$ZK_NOTEBOOK_DIR/.zk/scripts/sketch.scpt" "$subfolder"
 # Watch the assets folder until the sketch appears. Timeout after 10 mins.
 file=`timeout --foreground "$timeout" fswatch --event=Created -1 -e '[^(png)]$' "$DIR"`
 
+rc="$?"
 # Check if timeout or file exists
-if [ "$?" -gt 0 ]; then exit $?; fi
+if [ "$rc" -gt 0 ]; then exit "$rc"; fi
 if [ ! -f "$file" ]; then exit 22 ; fi
 
 # Create new unique identifier
@@ -63,4 +67,4 @@ if [ -n "$invert" ]; then
 fi
 
 # Return the new file file name
-echo "$DIR/$newfile"
+echo "$subfolder/$newfile"
