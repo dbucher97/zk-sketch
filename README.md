@@ -4,7 +4,7 @@ This is a script thet works in conjunction with [Mickael Menu's
 zk](https://github.com/mickael-menu/zk) only for MacOs. It opens the iPad
 continuous sketch and copies the file into a demanded folder in the slipbox.
 
-### Installing
+### Installation
 
 There are two scripts present `sketch.sh` and `sketch.scpt`. Copy both into the
 scripts folder inside the `zk` config (I chose this folder here). Or simply
@@ -12,8 +12,12 @@ scripts folder inside the `zk` config (I chose this folder here). Or simply
 
 Finally add the following alias to `.zk/config.toml`
 ```
-sketch = "$ZK_NOTEBOOK_DIR/.zk/scripts/sketch.sh"
+sketch = "$ZK_NOTEBOOK_DIR/.zk/scripts/sketch.sh [-i] [-f assets] [-t 10m]"
 ```
+Three options are possible to set:
+- `-i` inverts the luminance of the sketch (for dark backgrounds)
+- `-f` sets the folder of the assets (default `assets`)
+- `-t` sets the timeout for waiting for the sketch (default `10m`)
 
 Now the command `zk sketch` is available to you.
 
@@ -30,4 +34,11 @@ file gets transferred into the `assets` folder. The sketch gets automatically
 renamed and optinally luminance inverted for better contrast on dark
 backgrounds.
 
+### Example
 
+On the Mac ![](./assets/mac.gif)
+On the iPad ![](./assets/ipad.gif)
+
+### LICENSE
+
+GPLv3
