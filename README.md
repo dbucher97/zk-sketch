@@ -71,37 +71,49 @@ local commands = require "zk.commands"
 local Job = require "plenary.job"
 
 local function zk_sketch(options)
-  options = options or { invert = true }
   local args = { "sketch" }
+  for k, v in pairs(options or {}) do
+    if k == "invert" then
+      if v then
+        table.insert(args, "-i")
+      else
+        table.insert(args, "-n")
+      end
+    elseif k == "timeout" then
+      table.insert(args, "-t")
+      table.insert(args, v)
+    elseif k == "folder" then
+      table.insert(args, "-f")
+      table.insert(args, v)
+    end
+  end
   Job
     :new({
       command = "zk",
       args = args,
-      on_exit = function(j, return_val)
+      on_exit = vim.schedule_wrap(function(j, return_val)
         local res = j:result()
         if return_val == 124 then
-          vim.schedule(function()
-            vim.notify("Sketch: Timeout!", "warning")
-          end)
+          vim.notify("Sketch: Timeout!", vim.log.levels.WARN)
           return
         elseif return_val ~= 0 or res[1] == nil then
-          vim.schedule(function()
-            vim.notify("Sketch: Error " .. tostring(return_val) .. "!", "error")
-          end)
+          vim.notify(
+            "Sketch: Error " .. tostring(return_val) .. "!",
+            vim.log.levels.ERROR
+          )
           return
         end
         local path = res[1]
-        vim.schedule(function()
-          vim.fn.setreg('"', "![](" .. path .. ")")
-          vim.notify(
-            "Sketch: Link (" .. path .. ") copied to clipboard!",
-            "info"
-          )
-        end)
-      end,
+        vim.fn.setreg('"', "![](" .. path .. ")")
+        vim.notify(
+          "Sketch: Link (" .. path .. ") copied to clipboard!",
+          vim.log.levels.INFO
+        )
+      end),
     })
     :start()
 end
+
 commands.add("ZkSketch", zk_sketch)
 ```
 Now, the command `ZkSketch` triggers the sketch taking and has the default
